@@ -1,0 +1,199 @@
+/* .home {
+    padding: 20px;
+  }
+  
+  .toolbar {
+    margin: 20px 0;
+  }
+  
+  .toolbar input, .toolbar select {
+    margin-right: 10px;
+    padding: 5px;
+  }
+  
+  .map-toolbar {
+    margin: 20px 0;
+  }
+  
+  .map-toolbar button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    background-color: #006633;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .map-toolbar button:hover {
+    background-color: #004d29;
+  } */
+
+  .home-container {
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 256px;
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    z-index: 10;
+  }
+  
+  .sidebar h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 24px;
+  }
+  
+  .layer-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .layer-item input {
+    margin-right: 8px;
+  }
+  
+  .layer-item span {
+    color: #4b5563;
+  }
+  
+  .map-container {
+    margin-left: 256px;
+    height: 100vh;
+  }
+  
+  .tools {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .tool-button {
+    padding: 12px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .tool-button:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .legend-panel {
+    position: absolute;
+    top: 16px;
+    right: 80px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    z-index: 20;
+  }
+  
+  .legend-panel h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+  }
+  
+  .legend-panel ul {
+    color: #4b5563;
+    list-style-type: disc;
+    padding-left: 16px;
+  }
+  
+  .coordinate-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .modal-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .modal-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    display: block;
+    color: #4b5563;
+    margin-bottom: 8px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .form-group input:focus {
+    border-color: #f28c38;
+    box-shadow: 0 0 0 2px rgba(0, 102, 51, 0.2);
+  }
+  
+  .add-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #f28c38;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .add-button:hover {
+    background-color: #004d29;
+  }
