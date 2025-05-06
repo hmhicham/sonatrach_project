@@ -103,7 +103,9 @@ import PerimeterList from '../pages/PerimeterList';
 import Dashboard from '../pages/Dashboard';
 import Programmes from '../pages/Programmes';
 import './App.css';
-
+import 'leaflet/dist/leaflet.css';
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+import '@geoman-io/leaflet-geoman-free';  // Remove the 'leaflet-geoman-free' import and use this instead
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [username, setUsername] = useState('');

@@ -105,6 +105,10 @@ import base64
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import logging
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
 
 # Custom serializer for engagement details (Step 3 of Perimetres)
 class EngagementDetailSerializer(serializers.Serializer):
@@ -398,6 +402,7 @@ class BlocMapView(APIView):
 
 class WellMapView(APIView):
     def get(self, request):
+        print(f"Request user: {request.user}, authenticated: {request.user.is_authenticated}")
         wells = Well.objects.all()
         serializer = WellSerializer(wells, many=True)
         data = [{'sigle': item['sigle'], 'position': item['position_display']} for item in serializer.data]
@@ -416,8 +421,14 @@ class SeismicMapView(APIView):
 
 # New View to Save Drawn Polygons
 # backend/yourapp/views.py
+
+# @csrf_exempt
+# @api_view(['POST'])
 class SavePolygonAPIView(APIView):
     def post(self, request):
+        print(f"Request headers: {request.headers}")
+        print(f"Request data: {request.data}")
+        print(f"Request user: {request.user}, authenticated: {request.user.is_authenticated}")
         if not request.user.is_authenticated:
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -431,50 +442,18 @@ class SavePolygonAPIView(APIView):
 
         try:
             if entity_type == 'WELL':
-
                 position = data.get('position')
-
                 if not position or not isinstance(position, list) or len(position) != 2:
-
                     return Response({'error': 'Invalid position for WELL'}, status=status.HTTP_400_BAD_REQUEST)
-
-                geom = MultiPoint([[position[1], position[0]]], srid=4326)  # [lng, lat]
-
-                data['coords'] = geom
-
-            else:
-
+                data['coords'] = Point([position[1], position[0]], srid=4326)
+            elif entity_type in ['PRM', 'BLC', '2D', '3D']:
                 positions = data.get('positions')
-
-                if not positions or not isinstance(positions, list) or len(positions) < 3:
-
+                if not positions or not isinstance(positions, list) or len(positions) < (2 if entity_type == '2D' else 3):
                     return Response({'error': 'Invalid positions for entity'}, status=status.HTTP_400_BAD_REQUEST)
+                # Let the serializer handle the geometry conversion
+                if entity_type in ['PRM', '2D', '3D']:
+                    data['operator'] = request.user.username
 
-                if entity_type == '2D':
-
-                    coords = [[pos[1], pos[0]] for pos in positions]  # [lng, lat]
-
-                    geom = LineString(coords, srid=4326)
-
-                else:
-
-                    coords = [[[pos[1], pos[0]] for pos in positions]]  # [lng, lat]
-
-                    geom = MultiPolygon([coords], srid=4326)
-
-                data['coords'] = geom
-
-
-
-            # Add operator field for models that support it
-
-            if entity_type in ['PRM', '2D', '3D']:
-
-                data['operator'] = request.user.username
-
-
-
-            # Serialize and save the data
             if entity_type == 'PRM':
                 serializer = ConcessionSerializer(data=data)
             elif entity_type == 'BLC':
@@ -506,20 +485,12 @@ class SavePolygonAPIView(APIView):
                 else:
                     identifier = instance.nom_etude
 
-                # Log the action in TransactionLog
-
                 TransactionLog.objects.create(
-
                     user=request.user,
-
                     model_name=entity_type,
-
                     object_id=str(instance.pk),
-
                     action='INSERT',
-
-                    changes={'geometry': str(data['coords']), 'data': data}
-
+                    changes={'geometry': str(data.get('coords', '')), 'data': data}
                 )
 
                 print('Positions in response:', positions)
@@ -533,7 +504,6 @@ class SavePolygonAPIView(APIView):
         except Exception as e:
             print('Exception:', str(e))
             return Response({'error': f'Internal server error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 # New View to Fetch Subordinates
 
 class SubordinatesAPIView(APIView):
@@ -590,3 +560,12 @@ def auth_status_view(request):
     return JsonResponse({
         'is_authenticated': False,
     })
+
+
+class AuthStatusView(APIView):
+    def get(self, request):
+        print(f"AuthStatusView: Request user: {request.user}, authenticated: {request.user.is_authenticated}")
+        return Response({
+            'is_authenticated': request.user.is_authenticated,
+            'username': request.user.username if request.user.is_authenticated else None
+        }, status=status.HTTP_200_OK)

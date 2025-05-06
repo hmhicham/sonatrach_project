@@ -151,12 +151,12 @@ class BlocSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
-    positions_display = serializers.SerializerMethodField(source='positions')
+    positions_display = serializers.SerializerMethodField()
 
     class Meta:
         model = Bloc
-        fields = ['id', 'positions', 'positions_display']
-        read_only_fields = ['positions_display']
+        fields = ['id', 'positions', 'positions_display', 'coords']
+        read_only_fields = ['positions_display', 'coords']
 
     def create(self, validated_data):
         print('Validated data in create:', validated_data)
@@ -165,6 +165,8 @@ class BlocSerializer(serializers.ModelSerializer):
         if positions:
             try:
                 coords = [[pos[1], pos[0]] for pos in positions]
+                if len(coords) < 3:
+                    raise serializers.ValidationError("A polygon must have at least 3 points.")
                 if coords[0] != coords[-1]:
                     coords.append(coords[0])
                 validated_data['coords'] = Polygon(coords, srid=4326)
@@ -176,14 +178,30 @@ class BlocSerializer(serializers.ModelSerializer):
         print('Instance coords after save:', instance.coords)
         return instance
 
-    def get_positions(self, obj):
-        if obj.coords:
-            print(f"Coords for Bloc {obj.id}:", obj.coords)
-            coords = obj.coords.coords
-            print(f"Extracted coords for Bloc {obj.id}:", coords)
-            return [list(coord)[::-1] for coord in coords[0]]  # Convert [lng, lat] back to [lat, lng]
-        print(f"No coords for Bloc {obj.id}")
-        return []
+# there is no impact on the map
+    # def get_positions(self, obj):
+    #     if obj.coords:
+    #         print(f"Coords for Bloc {obj.id}:", obj.coords)
+    #         coords = obj.coords.coords
+    #         print(f"Extracted coords for Bloc {obj.id}:", coords)
+    #         return [list(coord)[::-1] for coord in coords[0]]  # Convert [lng, lat] back to [lat, lng]
+    #     print(f"No coords for Bloc {obj.id}")
+    #     return []
+
+    def update(self, instance, validated_data):
+        positions = validated_data.pop('positions', None)
+        if positions:
+            try:
+                coords = [[pos[1], pos[0]] for pos in positions]
+                if len(coords) < 3:
+                    raise serializers.ValidationError("A polygon must have at least 3 points.")
+                if coords[0] != coords[-1]:
+                    coords.append(coords[0])
+                validated_data['coords'] = Polygon(coords, srid=4326)
+            except Exception as e:
+                print('Error creating Polygon:', str(e))
+                raise serializers.ValidationError(f"Invalid coordinates: {str(e)}")
+        return super().update(instance, validated_data)
 
     def get_positions_display(self, obj):
         if obj.coords:
@@ -198,7 +216,6 @@ class BlocSerializer(serializers.ModelSerializer):
                 return []
         print(f"No coords for Bloc {obj.id}")
         return []
-
 
 class DepartementSerializer(serializers.ModelSerializer):
     class Meta:

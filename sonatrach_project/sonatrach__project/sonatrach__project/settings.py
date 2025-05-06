@@ -54,6 +54,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # React default port
     'http://127.0.0.1:8000',
+    'http://localhost:3000',
 ]
 SRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
@@ -146,6 +147,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000/'  # Redirect to frontend home
 LOGOUT_REDIRECT_URL = 'accounts:login'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 
 

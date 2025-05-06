@@ -14,9 +14,11 @@ from .views import (
     BlocMapView,
     WellMapView,
     SeismicMapView,DemandeListView,  # Add this line
-    DemandeCreateView ,SavePolygonAPIView,SubordinatesAPIView,auth_status_view
+    DemandeCreateView ,SavePolygonAPIView,SubordinatesAPIView,auth_status_view,AuthStatusView
 )
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
+from django.urls import re_path
 urlpatterns = [
     path('concessions/', ConcessionListView.as_view(), name='concession-list'),
     path('phases/', PhaseListView.as_view(), name='phase-list'),
@@ -47,4 +49,6 @@ urlpatterns = [
     # New endpoint for subordinates
     path('subordinates/', SubordinatesAPIView.as_view(), name='subordinates'),
     path('auth-status/', auth_status_view, name='auth-status'),
+    path('auth-status/', AuthStatusView.as_view(), name='auth_status'),
+    re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name='index.html')),  # Catch-all for React app
 ]
