@@ -1,3 +1,7 @@
+// Configure axios to include CSRF token in requests
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.withCredentials = true;
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Avenants.css';
@@ -142,7 +146,7 @@ function Avenants() {
     const formData = {
       numeroDemande: requestNumber,
       type: motif === 'CACRC'? 'Av' : 'D', // 'Av' or 'D'
-      has_ts: hasTs,
+      has_ts: hasTs === 'true' || hasTs === true,  // Convert to boolean
       accord: status === 'Approuvé' ? true : false,
       dateDemande: requestDate,
       dem_filename: demFilename,

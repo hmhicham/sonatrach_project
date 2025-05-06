@@ -162,7 +162,7 @@
   }
   
   .perimeter-table .link {
-    color: #2563eb;
+    cursor: pointer;
   }
   
   .perimeter-table .link:hover {

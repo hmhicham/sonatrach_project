@@ -1,6 +1,22 @@
 from django.urls import path
-from .views import ConcessionListView, PhaseListView, ContractListView, DemandeListView, DemandeCreateView, SeismicListView, WellListView, GgStudiesListView, FracturationListView, CommitementListView, EngagementDetailView
-
+from .views import (
+    ConcessionListView,
+    PhaseListView,
+    ContractListView,
+    SeismicListView,
+    WellListView,
+    GgStudiesListView,
+    FracturationListView,
+    CommitementListView,
+    EngagementDetailView,
+    SearchAPIView,
+    ConcessionMapView,
+    BlocMapView,
+    WellMapView,
+    SeismicMapView,DemandeListView,  # Add this line
+    DemandeCreateView ,SavePolygonAPIView,SubordinatesAPIView,auth_status_view
+)
+from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     path('concessions/', ConcessionListView.as_view(), name='concession-list'),
     path('phases/', PhaseListView.as_view(), name='phase-list'),
@@ -18,4 +34,17 @@ urlpatterns = [
         # Engagements for Perimetres page
     path('commitments/', CommitementListView.as_view(), name='commitment-list'),
     path('commitments/details/', EngagementDetailView.as_view(), name='engagement-details'),
+
+     # New URLs for map functionality
+    path('search/', SearchAPIView.as_view(), name='search'),
+    path('map/concessions/', ConcessionMapView.as_view(), name='concessions-map'),
+    path('map/blocs/', BlocMapView.as_view(), name='blocs-map'),
+    path('map/wells/', WellMapView.as_view(), name='wells-map'),
+    path('map/seismic/', SeismicMapView.as_view(), name='seismic-map'),
+    path('save-polygon/', csrf_exempt(SavePolygonAPIView.as_view()), name='save-polygon'),
+
+
+    # New endpoint for subordinates
+    path('subordinates/', SubordinatesAPIView.as_view(), name='subordinates'),
+    path('auth-status/', auth_status_view, name='auth-status'),
 ]

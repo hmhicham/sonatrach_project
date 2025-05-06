@@ -3,14 +3,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonatrach Home</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <div class="login-container">
-        <img src="{% static 'images/sonatrach-logo.png' %}" alt="Sonatrach Logo" class="logo">
-        <h2>Welcome, {{ username }}!</h2>
-        <a href="{% url 'accounts:logout' %}">Logout</a>
+    <div class="home-container">
+        <img src="{% static 'images/f1.png' %}" alt="Sonatrach Logo" class="logo">
+        <h2>Welcome, {{ user.username }}!</h2>
+        <p>This is the home page of the Sonatrach application.</p>
+        <a href="{% url 'accounts:logout' %}" class="logout-button">Logout</a>
     </div>
 </body>
 </html>

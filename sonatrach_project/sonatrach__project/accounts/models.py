@@ -469,7 +469,7 @@ class Demande(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
-
+# use'r change
 class CtrStatusLog(models.Model):
     id = models.BigAutoField(primary_key=True)
     ctr = models.ForeignKey(
@@ -497,7 +497,7 @@ class ToRealise(models.Model):
         Phase, to_field='id', on_delete=models.CASCADE, related_name='phsrr'
     )
 
-
+# use'r change
 class Notification(models.Model):
     msg = models.CharField()
     read = models.BooleanField(default=False)
@@ -637,7 +637,7 @@ class Manifold(models.Model):
     class Meta:
         db_table = 'manifold'
 
-
+# use'r change
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='subordinates')
@@ -649,7 +649,7 @@ class UserProfile(models.Model):
     def is_manager(self):
         return self.user.groups.filter(name='Manager').exists()
 
-
+# use'r change
 class TransactionLog(models.Model):
     """Logging of changes to the database"""
     ACTION_CHOICES = [

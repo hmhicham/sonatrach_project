@@ -627,14 +627,17 @@ function Perimetres() {
 //      t_sis_realisation
         const sismiquesResponse = await fetch(`http://127.0.0.1:8000/api/sismiques/?prm=${perimetreName}`);
         const sismiquesData = await sismiquesResponse.json();
+        console.log("Sismiques API Response:", sismiquesData);
         setSismiques(sismiquesData || []);
 //      table "t_Well"
         const foragesResponse = await fetch(`http://127.0.0.1:8000/api/puits/?prm=${perimetreName}`);
         const foragesData = await foragesResponse.json();
+        console.log("Forages API Response:", foragesData);
         setForages(foragesData || []);
 //      table t_gg_realisation
         const etudesGGResponse = await fetch(`http://127.0.0.1:8000/api/etudes/?prm=${perimetreName}`);
         const etudesGGData = await etudesGGResponse.json();
+        console.log("EtudesGG API Response:", etudesGGData);
         setEtudesGG(etudesGGData || []);
       } catch (error) {
         console.error('Error fetching realisations:', error);
@@ -1114,14 +1117,14 @@ function Perimetres() {
                   <tbody>
                     {sismiques.map((sismique, index) => (
                       <tr key={index}>
-                        <td>{sismique.designations}</td>
-                        <td>{sismique.perimetre}</td>
-                        <td>{sismique.nomEtude}</td>
-                        <td>{sismique.dateDebut}</td>
-                        <td>{sismique.dateFin}</td>
-                        <td>{sismique.compagnieService}</td>
+                        <td>{sismique.name}</td>
+                        <td>{sismique.prm}</td>
+                        <td>{sismique.type}</td>
+                        <td>{sismique.start_date}</td>
+                        <td>{sismique.end_date}</td>
+                        <td>{sismique.company}</td>
                         <td>{sismique.kilometrage}</td>
-                        <td>{sismique.couts}</td>
+                        <td>{sismique.cost}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1150,17 +1153,17 @@ function Perimetres() {
                     {forages.map((forage, index) => (
                       <tr key={index}>
                         {/* table "t_Well" */}
-                        <td>{forage.sigle}</td>
-                        <td>{forage.name}</td>
-                        <td>{forage.prm.name}</td>
-                        <td>{forage.type}</td>
-                        <td>{forage.objective}</td>
-                        <td>{forage.start_date}</td>
-                        <td>{forage.end_date}</td>
-                        <td>{forage.result}</td>
-                        <td>{forage.state}</td>
-                        <td>{forage.cost}</td>
-                        <td>{forage.company}</td>
+                        <td>{forage.sigle|| 'N/A'}</td>
+                        <td>{forage.name|| 'N/A'}</td>
+                        <td>{forage.prm.name|| 'N/A'}</td>
+                        <td>{forage.type|| 'N/A'}</td>
+                        <td>{forage.objective|| 'N/A'}</td>
+                        <td>{forage.start_date|| 'N/A'}</td>
+                        <td>{forage.end_date|| 'N/A'}</td>
+                        <td>{forage.result|| 'N/A'}</td>
+                        <td>{forage.state|| 'N/A'}</td>
+                        <td>{forage.cost|| 'N/A'}</td>
+                        <td>{forage.company|| 'N/A'}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -496,13 +496,13 @@ function PerimeterList() {
                     {/* {perimeter.name === 'REGGANE II' ? ( */}
                       <>
                         <a
-                          href="#"
+                          // href="#"
                           onClick={() => handleInitialize(perimeter.name)}
                           className="link"
                         >
                           {perimeter.name}
                         </a>
-                        <span className="fiche-link">Lien vers la fiche de synthèse</span>
+                        {/* <span className="fiche-link">Lien vers la fiche de synthèse</span> */}
                       </>
                     {/* ) : (
                       perimeter.name
