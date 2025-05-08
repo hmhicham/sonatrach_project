@@ -707,6 +707,7 @@ function Perimetres() {
   };
 
   const handleAddPhase = async () => {
+    if (phases.length >= 3) return; // Limit to 3 phases
     const newPhaseName = `Phase ${phases.length + 1}`;
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/phases/`, {
@@ -920,9 +921,9 @@ function Perimetres() {
         {step === 2 && (
           <div>
             <h2>suivi Contractuel {perimetre}</h2>
-            <button onClick={handleAddPhase} className="add-button">
+            {/* <button onClick={handleAddPhase} className="add-button">
               Ajouter une phase
-            </button>
+            </button> */}
             <div className="table-container">
               <table className="table">
                 <thead>
@@ -994,9 +995,9 @@ function Perimetres() {
                     </select>
                   </div>
                 </div>
-                <button onClick={handleAddPhase} className="add-buttonn">
+                {/* <button onClick={handleAddPhase} className="add-buttonn">
                   Ajouter une phase
-                </button>
+                </button> */}
               </div>
             </div>
 

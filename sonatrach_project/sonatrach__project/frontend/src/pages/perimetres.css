@@ -251,6 +251,7 @@
     background-color: #004d29;
   }
   .add-contract-button {
+    margin-bottom: 20px;
     padding: 12px 20px;
     background-color: #006633;
     color: white;

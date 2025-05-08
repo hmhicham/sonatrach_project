@@ -543,7 +543,7 @@ function PerimeterList() {
       {/* Modal for Updating Perimeter */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-contentt">
             <div className="modal-header">
               <h2>Mise à jour d’un périmètre</h2>
               <button onClick={handleModalClose} className="modal-close-button">✕</button>
@@ -605,7 +605,7 @@ function PerimeterList() {
                   name="observation"
                   value={formData.observation}
                   onChange={handleFormChange}
-                  rows="3"
+                  rows="2"
                 />
               </div>
               <button type="submit" className="submit-button">

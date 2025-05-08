@@ -1774,12 +1774,12 @@ function Home({ username, isManager }) {
       });
 
       console.log('Entity saved:', response.data);
-      const { positions } = response.data;
+      const { positions, created_by } = response.data;
       if (positions && Array.isArray(positions)) {
-        setDrawnShapes((prev) => [...prev, positions]);
+        setDrawnShapes((prev) => [...prev, positions, created_by]);
       } else {
         console.warn('No valid positions in response, using currentShape:', currentShape);
-        setDrawnShapes((prev) => [...prev, currentShape]);
+        setDrawnShapes((prev) => [...prev, currentShape, created_by]);
       }
 
       if (entityType === 'PRM') {
@@ -1976,6 +1976,7 @@ function Home({ username, isManager }) {
                     >
                       <Popup>
                         <div>{bloc.id}</div>
+                        <div>Created by: {bloc.created_by || 'Unknown'}</div>
                       </Popup>
                     </Polygon>
                   ))}
@@ -2035,9 +2036,14 @@ function Home({ username, isManager }) {
                     </Polygon>
                   ))}
 
-              {drawnShapes.map((shape, index) => (
-                shape && Array.isArray(shape) && shape.length > 0 && shape.every(coord => Array.isArray(coord) && coord.length === 2) ? (
-                  <Polygon key={index} positions={shape} pathOptions={{ color: 'cyan' }} />
+{drawnShapes.map((shape, index) => (
+                shape.positions && Array.isArray(shape.positions) && shape.positions.length > 0 && shape.positions.every(coord => Array.isArray(coord) && coord.length === 2) ? (
+                  <Polygon key={index} positions={shape.positions} pathOptions={{ color: 'cyan' }}>
+                    <Popup>
+                      <div>New Shape</div>
+                      <div>Created by: {shape.created_by || 'Unknown'}</div>
+                    </Popup>
+                  </Polygon>
                 ) : null
               ))}
 

@@ -109,6 +109,8 @@ import logging
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+
 
 # Custom serializer for engagement details (Step 3 of Perimetres)
 class EngagementDetailSerializer(serializers.Serializer):
@@ -199,14 +201,15 @@ class PhaseListView(APIView):
 class ContractListView(APIView):
     def get(self, request):
         contracts = Contract.objects.all()
-        
-        # Filter by perimeter if provided
         prm_name = request.query_params.get('prm', None)
         if prm_name:
             contracts = contracts.filter(prm__name=prm_name)
-            
-        serializer = ContractSerializer(contracts, many=True)
-        return Response(serializer.data)
+        try:
+            serializer = ContractSerializer(contracts, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error serializing contracts: {str(e)}")
+            return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class DemandeListView(APIView):
     def get(self, request):
@@ -222,6 +225,8 @@ class DemandeListView(APIView):
 
 class DemandeCreateView(APIView):
     def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         data = request.data.copy()
         
         if 'document_dem' in data and data['document_dem']:
@@ -244,11 +249,28 @@ class DemandeCreateView(APIView):
                     name=f"{data.get('resp_filename', 'response_doc')}.{ext}"
                 )
         
-        serializer = DemandeSerializer(data=data)
+        serializer = DemandeSerializer(data=data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            instance = serializer.save()
+            # Log the creation in TransactionLog
+            TransactionLog.objects.create(
+                user=request.user,
+                model_name='Demande',
+                object_id=str(instance.num),
+                action='INSERT',
+                changes={
+                    'data': data,
+                    'created_by': request.user.username,
+                    'last_modified_by': request.user.username
+                }
+            )
+            return Response({
+                'status': 'success',
+                'num': instance.num,
+                'created_by': request.user.username,
+                'last_modified_by': request.user.username
+            }, status=status.HTTP_201_CREATED)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 # programme ---------------#
 class SeismicListView(APIView):
@@ -398,7 +420,18 @@ class BlocMapView(APIView):
         blocs = Bloc.objects.all()
         serializer = BlocSerializer(blocs, many=True)
         data = [{'id': item['id'], 'positions': item['positions_display']} for item in serializer.data]
+        for item in serializer.data:
+            bloc_id = item['id']
+            # Fetch the latest creation log for this bloc
+            log = TransactionLog.objects.filter(model_name='BLC', object_id=bloc_id, action='INSERT').order_by('-timestamp').first()
+            created_by = log.changes.get('created_by', 'Unknown') if log else 'Unknown'
+            data.append({
+                'id': item['id'],
+                'positions': item['positions_display'],
+                'created_by': created_by
+            })
         return Response(data, status=status.HTTP_200_OK)
+        # return Response(data, status=status.HTTP_200_OK)
 
 class WellMapView(APIView):
     def get(self, request):
@@ -490,14 +523,16 @@ class SavePolygonAPIView(APIView):
                     model_name=entity_type,
                     object_id=str(instance.pk),
                     action='INSERT',
-                    changes={'geometry': str(data.get('coords', '')), 'data': data}
+                    changes={'geometry': str(data.get('coords', '')), 'data': data, 'created_by': request.user.username}
+                    
                 )
 
                 print('Positions in response:', positions)
                 return Response({
                     'status': 'success',
                     'id': identifier,
-                    'positions': positions
+                    'positions': positions,
+                    'created_by': request.user.username
                 }, status=status.HTTP_201_CREATED)
             print('Serializer errors:', serializer.errors)
             return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
